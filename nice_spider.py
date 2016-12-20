@@ -6,15 +6,27 @@ import threading
 import time
 from bs4 import BeautifulSoup
 
-# directories, please replace it with your directories
+
+# Base directories, replace them with your own directories
 results_directory = r'D:\Program\GitHub\Nice_Spider\results'
 pics_directory = r'D:\Program\GitHub\Nice_Spider\pics'
 
-# fake header
+# Fake header
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'} 
 
-# sources：图片页链接， pics：图片链接
+# Nice url
+base_url = r'www.oneniceapp.com'
 
+# Thread communication settings
+mutex = threading.Lock()
+is_exit = False
+
+user_url_queue = queue.Queue()
+
+
+
+# Obtain pictures and sources from tag page
+# sources：图片页链接  pics：图片链接
 class Nice(object):
 	
 	def __init__(self, url):
@@ -35,6 +47,10 @@ class Nice(object):
 
 	def save(self):
 		for source in self.sources:
+			user_url_queue.push(source)
+
+		# just for test, meanningless
+		for source in self.sources:
 			self.f_sources.write(source + '\r\n')
 
 		for pic in self.pics:
@@ -42,6 +58,22 @@ class Nice(object):
 
 		self.f_sources.close()
 		self.f_pics.close()
+
+
+
+# Get user info and download images from homepage
+# 
+class Page_Downloader(threading.Thread):
+
+	def __init__(self, queue):
+		threading.Thread.__int__(self)
+
+
+	def download(self, url):
+
+
+	def run(self):
+
 
 
 
