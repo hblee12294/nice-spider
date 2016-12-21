@@ -46,6 +46,7 @@ class Nice(object):
 			self.pics.append(block.img['src'].strip())
 
 	def save(self):
+		global user_url_queue
 		for source in self.sources:
 			user_url_queue.push(source)
 
@@ -67,6 +68,7 @@ class Page_Downloader(threading.Thread):
 
 	def __init__(self, queue):
 		threading.Thread.__int__(self)
+		self.queue = queue
 
 
 	def download(self, url):
@@ -75,6 +77,13 @@ class Page_Downloader(threading.Thread):
 	def run(self):
 
 
+
+
+def handler(signum, frame):
+	global is_exit
+	is_exit = True
+	print('Receive a signal %d, is_exit = %d' % (signum, is_exit))
+	sys.exit(0)
 
 
 def main():
@@ -87,6 +96,23 @@ def main():
 	nice = Nice(url)
 	nice.download()
 	nice.save()
+
+	signal.signal(signal.SIGINT, handler)
+	signal.signal(signal.SIGTERM, handler)
+
+	threads = []
+	NUM_WORKERS = 5
+	for i in range(NUM_WORKERS):
+		downloader = Page_Downloader(user_url_queue)
+		downloader.setDaemon(True)
+		downloader.start()
+		threads.append(downloader)
+
+	while True:
+		for thread in threads:
+			if not thread.isAlive():
+				break
+			time.sleep(1)
 
 
 if __name__ == '__main__':
