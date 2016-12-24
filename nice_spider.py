@@ -33,8 +33,8 @@ class Nice(object):
 		self.original_url = url
 		self.sources = []
 		self.pics = []
-		self.f_sources = open(results_directory + '\sources.txt', 'a+')
-		self.f_pics = open(pics_directory + '\pics.txt', 'a+')
+		self.f_sources = open(results_directory + r'\sources.txt', 'a+')
+		self.f_pics = open(pics_directory + r'\pics.txt', 'a+')
 
 	def download(self):
 		res = requests.get(self.original_url, headers = headers)
@@ -68,13 +68,23 @@ class Page_Downloader(threading.Thread):
 
 	def __init__(self, queue):
 		threading.Thread.__int__(self)
-		self.queue = queue
-
+		self.user_queue = queue
+		self.total_users = []
+		self.f_users = open(results_directory + r'\users.txt', 'a+')
 
 	def download(self, url):
+		res = requests.get(url)
+		soup = BeautifulSoup(res.text)
+
 
 
 	def run(self):
+		global is_exit
+		while not is_exit:
+			user = self.user_url_queue.get()
+			url = base_url + user
+			
+
 
 
 
